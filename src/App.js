@@ -17,44 +17,45 @@ const faqs = [
 ];
 
 export default function App() {
-  return (
-    <div>
-      <Accordion />
-    </div>
-  );
+  return <Accordion />;
 }
 
 function Accordion() {
+  const [curOpen, setCurOpen] = useState(null);
+
+  function handleCurOpen(num) {
+    setCurOpen((curOpen) => (curOpen === num ? null : num));
+  }
+
   return (
     <div className="accordion">
       {faqs.map((faq, index) => (
         <Item
           title={faq.title}
-          text={faq.text}
           key={faq.title}
           num={index + 1}
-        />
+          curOpen={curOpen === index + 1}
+          onCurOpen={handleCurOpen}
+        >
+          {faq.text}
+        </Item>
       ))}
     </div>
   );
 }
 
-function Item({ title, text, num }) {
-  const [status, setStatus] = useState("");
-
+function Item({ title, children, num, curOpen, onCurOpen }) {
   const formattedNum = String(num).padStart(2, "0");
 
-  function handleStatus() {
-    if (status === "") setStatus("open");
-    else setStatus("");
-  }
-
   return (
-    <div className={`item ${status}`} onClick={handleStatus}>
+    <div
+      className={`item ${curOpen ? "open" : ""}`}
+      onClick={() => onCurOpen(num)}
+    >
       <p className="number">{formattedNum}</p>
       <p className="title">{title}</p>
-      <p className="icon">{status === "open" ? "-" : "+"}</p>
-      <p className="content-box">{status === "open" ? text : null}</p>
+      <p className="icon">{curOpen ? "-" : "+"}</p>
+      {curOpen ? <p className="content-box">{children}</p> : null}
     </div>
   );
 }
